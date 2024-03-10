@@ -15,5 +15,5 @@ type SqlConfig struct {
 	Host string `yaml:"host"`
 	Port int    `yaml:"port"`
 	Db   string `yaml:"db"`
-	TLS  string `yaml:"tls" env-default:"disable"`
+	SSL  string `yaml:"ssl" env-default:"disable"`
 }

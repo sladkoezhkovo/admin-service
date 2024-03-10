@@ -1,5 +1,5 @@
 build:
-	go build -v cmd/admin-service
+	go build -v ./cmd/admin-service
 
 debug:
 	make build

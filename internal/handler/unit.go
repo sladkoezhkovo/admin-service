@@ -15,27 +15,27 @@ type UnitService interface {
 	Delete(id int) error
 }
 
-func (s *server) CreateUnit(ctx context.Context, request *api.CreateCityRequest) (*api.City, error) {
+func (s *server) CreateUnit(ctx context.Context, request *api.CreateUnitRequest) (*api.Unit, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *server) FindByIdUnit(ctx context.Context, request *api.FindByIdRequest) (*api.City, error) {
+func (s *server) FindByIdUnit(ctx context.Context, request *api.FindByIdRequest) (*api.Unit, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *server) FindByNameUnit(ctx context.Context, request *api.FindByNameRequest) (*api.City, error) {
+func (s *server) FindByNameUnit(ctx context.Context, request *api.FindByNameRequest) (*api.Unit, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *server) ListUnit(ctx context.Context, request *api.ListRequest) (*api.ListCityResponse, error) {
+func (s *server) ListUnit(ctx context.Context, request *api.ListRequest) (*api.ListUnitResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (s *server) UpdateUnit(ctx context.Context, city *api.City) (*api.City, error) {
+func (s *server) UpdateUnit(ctx context.Context, request *api.Unit) (*api.Unit, error) {
 	//TODO implement me
 	panic("implement me")
 }
