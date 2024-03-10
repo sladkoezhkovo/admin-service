@@ -1,5 +1,8 @@
-env: local
+app:
+  name: admin-service
+  env: dev
+  port: 5082
 pg:
-  host: 'postgres'
+  host: postgres
   port: 5432
-  ssl: disable
+  db: psbd

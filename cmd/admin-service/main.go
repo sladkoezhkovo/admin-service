@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"github.com/sladkoezhkovo/admin-service/internal/config"
+	"github.com/sladkoezhkovo/lib"
 	"google.golang.org/grpc"
 	"os"
 	"os/signal"
@@ -18,6 +21,12 @@ func init() {
 
 func main() {
 	flag.Parse()
+
+	var cfg config.Config
+
+	if err := lib.SetupConfig(configPath, &cfg); err != nil {
+		panic(fmt.Errorf("cannot read config: %s", err))
+	}
 
 	server := grpc.NewServer()
 

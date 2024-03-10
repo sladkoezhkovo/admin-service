@@ -1,5 +1,8 @@
-env: local
+app:
+  name: admin-service
+  env: local
+  port: 5082
 pg:
-  host: 'localhost'
+  host: localhost
   port: 5432
-  ssl: disable
+  db: psbd
