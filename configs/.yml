@@ -1,0 +1,5 @@
+env: local
+pg:
+  host: 'postgres'
+  port: 5432
+  ssl: disable
