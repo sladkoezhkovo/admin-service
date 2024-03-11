@@ -52,6 +52,8 @@ func main() {
 		panic(fmt.Errorf("cannot read config: %s", err))
 	}
 
+	fmt.Println(cfg)
+
 	fmt.Printf("db init")
 	db, err := pg.Setup(&cfg.Pg)
 	if err != nil {

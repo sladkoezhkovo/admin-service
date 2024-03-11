@@ -1,7 +1,7 @@
 app:
   name: admin-service
   env: dev
-  port: 5082
+  port: 8000
 pg:
   host: postgres
   port: 5432
