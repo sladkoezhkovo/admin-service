@@ -9,10 +9,16 @@ import (
 	handler "github.com/sladkoezhkovo/admin-service/internal/handler"
 	"github.com/sladkoezhkovo/admin-service/internal/repository/pg"
 	cityrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/city-repository"
+	ctrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/ct-repository"
 	districtrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/district-repository"
+	packagingrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/packaging-repository"
+	ptrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/property-repository"
 	unitrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/unit-repository"
 	cityservice "github.com/sladkoezhkovo/admin-service/internal/service/city-service"
+	ctservice "github.com/sladkoezhkovo/admin-service/internal/service/ct-service"
 	districtservice "github.com/sladkoezhkovo/admin-service/internal/service/district-service"
+	packagingservice "github.com/sladkoezhkovo/admin-service/internal/service/packaging-service"
+	ptservice "github.com/sladkoezhkovo/admin-service/internal/service/pt-service"
 	unitservice "github.com/sladkoezhkovo/admin-service/internal/service/unit-service"
 	"github.com/sladkoezhkovo/lib"
 	"google.golang.org/grpc"
@@ -55,22 +61,28 @@ func main() {
 	cityRepository := cityrepository.New(db)
 	unitRepository := unitrepository.New(db)
 	districtRepository := districtrepository.New(db)
+	packagingRepository := packagingrepository.New(db)
+	ptRepository := ptrepository.New(db)
+	ctRepository := ctrepository.New(db)
 
 	cityService := cityservice.New(cityRepository)
 	unitService := unitservice.New(unitRepository)
 	districtService := districtservice.New(districtRepository)
+	packagingService := packagingservice.New(packagingRepository)
+	ptService := ptservice.New(ptRepository)
+	ctService := ctservice.New(ctRepository)
 
 	server := grpc.NewServer()
-	adapter := handler.New(
+	adminServiceHandler := handler.New(
 		cityService,
 		districtService,
-		nil,
+		packagingService,
 		unitService,
-		nil,
-		nil,
+		ptService,
+		ctService,
 	)
 
-	api.RegisterAdminServiceServer(server, adapter)
+	api.RegisterAdminServiceServer(server, adminServiceHandler)
 
 	go func(s *grpc.Server, cfg *config.AppConfig) {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))

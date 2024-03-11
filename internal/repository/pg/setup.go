@@ -8,9 +8,12 @@ import (
 )
 
 const (
-	CityTable     = "city"
-	UnitTable     = "units"
-	DistrictTable = "district"
+	CityTable              = "city"
+	UnitTable              = "units"
+	DistrictTable          = "district"
+	PropertyTypeTable      = "property_type"
+	ConfectionaryTypeTable = "confectionary_type"
+	PackagingTable         = "packaging"
 )
 
 func Setup(cfg *config.SqlConfig) (*sqlx.DB, error) {
