@@ -9,7 +9,7 @@ import (
 type UnitService interface {
 	Create(unit *entity.Unit) error
 	FindById(id int64) (*entity.Unit, error)
-	FindByName(name string) (*entity.Unit, error)
+	ListByName(name string, limit, offset int32) ([]*entity.Unit, error)
 	List(limit, offset int) ([]*entity.Unit, error)
 	Update(unit *entity.Unit) error
 	Delete(id int64) error
@@ -42,16 +42,24 @@ func (s *server) FindByIdUnit(ctx context.Context, request *api.FindByIdRequest)
 	}, nil
 }
 
-func (s *server) FindByNameUnit(ctx context.Context, request *api.FindByNameRequest) (*api.Unit, error) {
-	unit, err := s.unit.FindByName(request.Name)
+func (s *server) ListByNameUnit(ctx context.Context, request *api.ListByNameRequest) (*api.ListUnitResponse, error) {
+	entries, err := s.unit.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.Unit{
-		Id:   unit.Id,
-		Name: unit.Name,
-	}, nil
+	response := &api.ListUnitResponse{
+		Entries: make([]*api.Unit, 0, len(entries)),
+	}
+
+	for _, e := range entries {
+		response.Entries = append(response.Entries, &api.Unit{
+			Id:   e.Id,
+			Name: e.Name,
+		})
+
+	}
+	return response, nil
 }
 
 func (s *server) ListUnit(ctx context.Context, request *api.ListRequest) (*api.ListUnitResponse, error) {

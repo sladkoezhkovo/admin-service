@@ -11,7 +11,7 @@ import (
 type DistrictService interface {
 	Create(district *entity.District) error
 	FindById(id int64) (*entity.District, error)
-	FindByName(name string) (*entity.District, error)
+	ListByName(name string, limit, offset int32) ([]*entity.District, error)
 	List(limit, offset int) ([]*entity.District, error)
 	Update(district *entity.District) error
 	Delete(id int64) error
@@ -52,16 +52,24 @@ func (s *server) FindByIdDistrict(ctx context.Context, request *api.FindByIdRequ
 	return response, nil
 }
 
-func (s *server) FindByNameDistrict(ctx context.Context, request *api.FindByNameRequest) (*api.District, error) {
-	district, err := s.district.FindByName(request.Name)
+func (s *server) ListByNameDistrict(ctx context.Context, request *api.ListByNameRequest) (*api.ListDistrictResponse, error) {
+	dd, err := s.district.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.District{
-		Id:   district.Id,
-		Name: district.Name,
-	}, nil
+	response := &api.ListDistrictResponse{
+		Entries: make([]*api.District, 0, len(dd)),
+	}
+
+	for _, d := range dd {
+		response.Entries = append(response.Entries, &api.District{
+			Id:   d.Id,
+			Name: d.Name,
+			City: d.City.Name,
+		})
+	}
+	return response, nil
 }
 
 func (s *server) ListDistrict(ctx context.Context, request *api.ListRequest) (*api.ListDistrictResponse, error) {

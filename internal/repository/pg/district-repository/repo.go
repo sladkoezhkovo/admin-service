@@ -33,7 +33,7 @@ func (c *districtRepository) FindById(id int64) (*entity.District, error) {
 		&district,
 		fmt.Sprintf(
 			`SELECT 
-						d.id, d.name, c.id as "city.id", c.name as "city.name" 
+						d.id, d.name, c.name as "city.name" 
 					FROM %s d
 					INNER JOIN %s c ON d.city_id = c.id  	
 					WHERE d.id = $1`, pg.DistrictTable, pg.CityTable),
@@ -44,27 +44,45 @@ func (c *districtRepository) FindById(id int64) (*entity.District, error) {
 	return &district, nil
 }
 
-func (c *districtRepository) FindByName(name string) (*entity.District, error) {
-	var district entity.District
-	if err := c.db.Get(
-		&district,
+func (c *districtRepository) ListByCityId(cityId int64) ([]*entity.District, error) {
+	var dd []*entity.District
+	if err := c.db.Select(
+		&dd,
 		fmt.Sprintf(
 			`SELECT 
-						d.id, d.name, c.id as "city.id", c.name as "city.name" 
-					FROM %s d
-					INNER JOIN %s c ON d.city_id = c.id  	
-					WHERE d.name = $1`, pg.DistrictTable, pg.CityTable),
-		name,
+						d.id, d.name, c.name as "city.name"  
+					FROM %s d 
+					INNER JOIN %s c ON d.city_id = c.id	
+					WHERE c.id = $1 ORDER BY d.id`, pg.DistrictTable, pg.CityTable),
+		cityId,
 	); err != nil {
 		return nil, err
 	}
-	return &district, nil
+	return dd, nil
+}
+
+func (c *districtRepository) ListByName(name string, limit, offset int32) ([]*entity.District, error) {
+	var dd []*entity.District
+	if err := c.db.Select(
+		&dd,
+		fmt.Sprintf(
+			`SELECT 
+						d.id, d.name, c.name as "city.name" 
+					FROM %s d
+					INNER JOIN %s c ON d.city_id = c.id  	
+					WHERE d.name ILIKE  $1 
+					LIMIT $2 OFFSET $3`, pg.DistrictTable, pg.CityTable),
+		"%"+name+"%", limit, offset,
+	); err != nil {
+		return nil, err
+	}
+	return dd, nil
 }
 
 func (c *districtRepository) List(limit, offset int) ([]*entity.District, error) {
-	var cities []*entity.District
+	var dd []*entity.District
 	if err := c.db.Select(
-		&cities,
+		&dd,
 		fmt.Sprintf(
 			`SELECT 
 						d.id, d.name, c.name as "city.name"  
@@ -77,7 +95,7 @@ func (c *districtRepository) List(limit, offset int) ([]*entity.District, error)
 	); err != nil {
 		return nil, err
 	}
-	return cities, nil
+	return dd, nil
 }
 
 func (c *districtRepository) Update(district *entity.District) error {

@@ -2,18 +2,18 @@ package districtservice
 
 import (
 	"errors"
-	"fmt"
 	"github.com/lib/pq"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 	"github.com/sladkoezhkovo/admin-service/internal/handler"
-	"github.com/sladkoezhkovo/admin-service/internal/repository/pg"
 	"github.com/sladkoezhkovo/admin-service/internal/service"
+	"strings"
 )
 
 type DistrictRepository interface {
 	Create(district *entity.District) error
 	FindById(id int64) (*entity.District, error)
-	FindByName(name string) (*entity.District, error)
+	ListByCityId(cityId int64) ([]*entity.District, error)
+	ListByName(name string, limit, offset int32) ([]*entity.District, error)
 	List(limit, offset int) ([]*entity.District, error)
 	Update(district *entity.District) error
 	Delete(id int64) error
@@ -33,10 +33,11 @@ func New(repository DistrictRepository) *districtService {
 
 func (c *districtService) Create(district *entity.District) error {
 
-	if d, err := c.repository.FindByName(district.Name); err == nil {
-		fmt.Printf("%s: detected collision on \nnew: %v\nold: %v\n", pg.DistrictTable, district, d)
-		if d.City.Id == district.City.Id {
-			return service.ErrUniqueViolation
+	if dd, err := c.repository.ListByCityId(district.City.Id); err == nil {
+		for _, d := range dd {
+			if strings.Compare(strings.ToLower(d.Name), strings.ToLower(district.Name)) == 0 {
+				return service.ErrUniqueViolation
+			}
 		}
 	}
 
@@ -67,8 +68,8 @@ func (c *districtService) FindById(id int64) (*entity.District, error) {
 	return district, nil
 }
 
-func (c *districtService) FindByName(name string) (*entity.District, error) {
-	district, err := c.repository.FindByName(name)
+func (c *districtService) ListByName(name string, limit, offset int32) ([]*entity.District, error) {
+	dd, err := c.repository.ListByName(name, limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
@@ -76,7 +77,7 @@ func (c *districtService) FindByName(name string) (*entity.District, error) {
 		}
 		return nil, err
 	}
-	return district, nil
+	return dd, nil
 }
 
 func (c *districtService) List(limit, offset int) ([]*entity.District, error) {

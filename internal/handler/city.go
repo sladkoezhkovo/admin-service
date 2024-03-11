@@ -10,7 +10,7 @@ import (
 type CityService interface {
 	Create(city *entity.City) error
 	FindById(id int64) (*entity.City, error)
-	FindByName(name string) (*entity.City, error)
+	ListByName(name string, limit, offset int32) ([]*entity.City, error)
 	List(limit, offset int) ([]*entity.City, error)
 	Update(city *entity.City) error
 	Delete(id int64) error
@@ -45,16 +45,24 @@ func (s *server) FindByIdCity(ctx context.Context, request *api.FindByIdRequest)
 	}, nil
 }
 
-func (s *server) FindByNameCity(ctx context.Context, request *api.FindByNameRequest) (*api.City, error) {
-	city, err := s.city.FindByName(request.Name)
+func (s *server) ListByNameCity(ctx context.Context, request *api.ListByNameRequest) (*api.ListCityResponse, error) {
+	entries, err := s.city.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.City{
-		Id:   city.Id,
-		Name: city.Name,
-	}, nil
+	response := &api.ListCityResponse{
+		Entries: make([]*api.City, 0, len(entries)),
+	}
+
+	for _, e := range entries {
+		response.Entries = append(response.Entries, &api.City{
+			Id:   e.Id,
+			Name: e.Name,
+		})
+
+	}
+	return response, nil
 }
 
 func (s *server) ListCity(ctx context.Context, request *api.ListRequest) (*api.ListCityResponse, error) {

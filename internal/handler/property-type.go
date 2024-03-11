@@ -9,7 +9,7 @@ import (
 type PropertyTypeService interface {
 	Create(propertyType *entity.PropertyType) error
 	FindById(id int64) (*entity.PropertyType, error)
-	FindByName(name string) (*entity.PropertyType, error)
+	ListByName(name string, limit, offset int32) ([]*entity.PropertyType, error)
 	List(limit, offset int) ([]*entity.PropertyType, error)
 	Update(propertyType *entity.PropertyType) error
 	Delete(id int64) error
@@ -42,16 +42,24 @@ func (s *server) FindByIdPropertyType(ctx context.Context, request *api.FindById
 	}, nil
 }
 
-func (s *server) FindByNamePropertyType(ctx context.Context, request *api.FindByNameRequest) (*api.PropertyType, error) {
-	propertyType, err := s.propertyType.FindByName(request.Name)
+func (s *server) ListByNamePropertyType(ctx context.Context, request *api.ListByNameRequest) (*api.ListPropertyTypeResponse, error) {
+	entries, err := s.propertyType.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.PropertyType{
-		Id:   propertyType.Id,
-		Name: propertyType.Name,
-	}, nil
+	response := &api.ListPropertyTypeResponse{
+		Entries: make([]*api.PropertyType, 0, len(entries)),
+	}
+
+	for _, e := range entries {
+		response.Entries = append(response.Entries, &api.PropertyType{
+			Id:   e.Id,
+			Name: e.Name,
+		})
+
+	}
+	return response, nil
 }
 
 func (s *server) ListPropertyType(ctx context.Context, request *api.ListRequest) (*api.ListPropertyTypeResponse, error) {

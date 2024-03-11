@@ -11,7 +11,7 @@ import (
 type UnitRepository interface {
 	Create(unit *entity.Unit) error
 	FindById(id int64) (*entity.Unit, error)
-	FindByName(name string) (*entity.Unit, error)
+	ListByName(name string, limit, offset int32) ([]*entity.Unit, error)
 	List(limit, offset int) ([]*entity.Unit, error)
 	Update(unit *entity.Unit) error
 	Delete(id int64) error
@@ -56,8 +56,8 @@ func (c *unitService) FindById(id int64) (*entity.Unit, error) {
 	return unit, nil
 }
 
-func (c *unitService) FindByName(name string) (*entity.Unit, error) {
-	unit, err := c.repository.FindByName(name)
+func (c *unitService) ListByName(name string, limit, offset int32) ([]*entity.Unit, error) {
+	unit, err := c.repository.ListByName(name, limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {

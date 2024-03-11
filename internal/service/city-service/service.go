@@ -11,7 +11,7 @@ import (
 type CityRepository interface {
 	Create(city *entity.City) error
 	FindById(id int64) (*entity.City, error)
-	FindByName(name string) (*entity.City, error)
+	ListByName(name string, limit, offset int32) ([]*entity.City, error)
 	List(limit, offset int) ([]*entity.City, error)
 	Update(city *entity.City) error
 	Delete(id int64) error
@@ -56,8 +56,8 @@ func (c *cityService) FindById(id int64) (*entity.City, error) {
 	return city, nil
 }
 
-func (c *cityService) FindByName(name string) (*entity.City, error) {
-	city, err := c.repository.FindByName(name)
+func (c *cityService) ListByName(name string, limit, offset int32) ([]*entity.City, error) {
+	city, err := c.repository.ListByName(name, limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {

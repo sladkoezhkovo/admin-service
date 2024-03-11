@@ -39,16 +39,16 @@ func (c *cityRepository) FindById(id int64) (*entity.City, error) {
 	return &city, nil
 }
 
-func (c *cityRepository) FindByName(name string) (*entity.City, error) {
-	var city entity.City
-	if err := c.db.Get(
-		&city,
-		fmt.Sprintf("SELECT * FROM %s WHERE name = $1", pg.CityTable),
-		name,
+func (c *cityRepository) ListByName(name string, limit, offset int32) ([]*entity.City, error) {
+	var cc []*entity.City
+	if err := c.db.Select(
+		&cc,
+		fmt.Sprintf(`SELECT * FROM %s WHERE name ILIKE  $1  LIMIT $2 OFFSET $3`, pg.CityTable),
+		"%"+name+"%", limit, offset,
 	); err != nil {
 		return nil, err
 	}
-	return &city, nil
+	return cc, nil
 }
 
 func (c *cityRepository) List(limit, offset int) ([]*entity.City, error) {

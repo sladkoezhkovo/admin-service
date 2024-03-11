@@ -39,16 +39,16 @@ func (c *unitRepository) FindById(id int64) (*entity.Unit, error) {
 	return &unit, nil
 }
 
-func (c *unitRepository) FindByName(name string) (*entity.Unit, error) {
-	var unit entity.Unit
-	if err := c.db.Get(
-		&unit,
-		fmt.Sprintf("SELECT * FROM %s WHERE name = $1", pg.UnitTable),
-		name,
+func (c *unitRepository) ListByName(name string, limit, offset int32) ([]*entity.Unit, error) {
+	var uu []*entity.Unit
+	if err := c.db.Select(
+		&uu,
+		fmt.Sprintf("SELECT * FROM %s WHERE name ILIKE $1 LIMIT $2 OFFSET $3", pg.UnitTable),
+		"%"+name+"%", limit, offset,
 	); err != nil {
 		return nil, err
 	}
-	return &unit, nil
+	return uu, nil
 }
 
 func (c *unitRepository) List(limit, offset int) ([]*entity.Unit, error) {

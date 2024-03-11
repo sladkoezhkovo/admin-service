@@ -11,7 +11,7 @@ import (
 type PackagingRepository interface {
 	Create(packaging *entity.Packaging) error
 	FindById(id int64) (*entity.Packaging, error)
-	FindByName(name string) (*entity.Packaging, error)
+	ListByName(name string, limit, offset int32) ([]*entity.Packaging, error)
 	List(limit, offset int) ([]*entity.Packaging, error)
 	Update(packaging *entity.Packaging) error
 	Delete(id int64) error
@@ -56,8 +56,8 @@ func (c *packagingService) FindById(id int64) (*entity.Packaging, error) {
 	return packaging, nil
 }
 
-func (c *packagingService) FindByName(name string) (*entity.Packaging, error) {
-	packaging, err := c.repository.FindByName(name)
+func (c *packagingService) ListByName(name string, limit, offset int32) ([]*entity.Packaging, error) {
+	packaging, err := c.repository.ListByName(name, limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {

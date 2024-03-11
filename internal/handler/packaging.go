@@ -9,7 +9,7 @@ import (
 type PackagingService interface {
 	Create(packaging *entity.Packaging) error
 	FindById(id int64) (*entity.Packaging, error)
-	FindByName(name string) (*entity.Packaging, error)
+	ListByName(name string, limit, offset int32) ([]*entity.Packaging, error)
 	List(limit, offset int) ([]*entity.Packaging, error)
 	Update(packaging *entity.Packaging) error
 	Delete(id int64) error
@@ -42,35 +42,23 @@ func (s *server) FindByIdPackaging(ctx context.Context, request *api.FindByIdReq
 	}, nil
 }
 
-func (s *server) FindByNamePackaging(ctx context.Context, request *api.FindByNameRequest) (*api.Packaging, error) {
-	packaging, err := s.packaging.FindByName(request.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	return &api.Packaging{
-		Id:   packaging.Id,
-		Name: packaging.Name,
-	}, nil
-}
-
-func (s *server) ListPackaging(ctx context.Context, request *api.ListRequest) (*api.ListPackagingResponse, error) {
-	packaging, err := s.packaging.List(int(request.Limit), int(request.Offset))
+func (s *server) ListByNamePackaging(ctx context.Context, request *api.ListByNameRequest) (*api.ListPackagingResponse, error) {
+	entries, err := s.packaging.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
 	response := &api.ListPackagingResponse{
-		Entries: make([]*api.Packaging, 0, len(packaging)),
+		Entries: make([]*api.Packaging, 0, len(entries)),
 	}
 
-	for _, packaging := range packaging {
+	for _, e := range entries {
 		response.Entries = append(response.Entries, &api.Packaging{
-			Id:   packaging.Id,
-			Name: packaging.Name,
+			Id:   e.Id,
+			Name: e.Name,
 		})
-	}
 
+	}
 	return response, nil
 }
 

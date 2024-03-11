@@ -9,7 +9,7 @@ import (
 type ConfectionaryTypeService interface {
 	Create(confectionaryType *entity.ConfectionaryType) error
 	FindById(id int64) (*entity.ConfectionaryType, error)
-	FindByName(name string) (*entity.ConfectionaryType, error)
+	ListByName(name string, limit, offset int32) ([]*entity.ConfectionaryType, error)
 	List(limit, offset int) ([]*entity.ConfectionaryType, error)
 	Update(confectionaryType *entity.ConfectionaryType) error
 	Delete(id int64) error
@@ -42,16 +42,24 @@ func (s *server) FindByIdConfectionaryType(ctx context.Context, request *api.Fin
 	}, nil
 }
 
-func (s *server) FindByNameConfectionaryType(ctx context.Context, request *api.FindByNameRequest) (*api.ConfectionaryType, error) {
-	confectionaryType, err := s.confectionaryType.FindByName(request.Name)
+func (s *server) ListByNameConfectionaryType(ctx context.Context, request *api.ListByNameRequest) (*api.ListConfectionaryTypeResponse, error) {
+	entries, err := s.confectionaryType.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &api.ConfectionaryType{
-		Id:   confectionaryType.Id,
-		Name: confectionaryType.Name,
-	}, nil
+	response := &api.ListConfectionaryTypeResponse{
+		Entries: make([]*api.ConfectionaryType, 0, len(entries)),
+	}
+
+	for _, e := range entries {
+		response.Entries = append(response.Entries, &api.ConfectionaryType{
+			Id:   e.Id,
+			Name: e.Name,
+		})
+
+	}
+	return response, nil
 }
 
 func (s *server) ListConfectionaryType(ctx context.Context, request *api.ListRequest) (*api.ListConfectionaryTypeResponse, error) {
