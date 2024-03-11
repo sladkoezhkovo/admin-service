@@ -11,10 +11,10 @@ var (
 type server struct {
 	api.UnimplementedAdminServiceServer
 
-	cities            CityService
-	districts         DistrictService
+	city              CityService
+	district          DistrictService
 	packaging         PackagingService
-	units             UnitService
+	unit              UnitService
 	propertyType      PropertyTypeService
 	confectionaryType ConfectionaryTypeService
 }
@@ -28,10 +28,10 @@ func New(
 	confectionaryTypeService ConfectionaryTypeService,
 ) *server {
 	return &server{
-		cities:            cityService,
-		districts:         districtService,
+		city:              cityService,
+		district:          districtService,
 		packaging:         packagingService,
-		units:             unitService,
+		unit:              unitService,
 		propertyType:      propertyTypeService,
 		confectionaryType: confectionaryTypeService,
 	}

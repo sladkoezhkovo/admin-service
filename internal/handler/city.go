@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"github.com/sladkoezhkovo/admin-service/api"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
@@ -20,9 +21,11 @@ func (s *server) CreateCity(ctx context.Context, request *api.CreateCityRequest)
 		Name: request.Name,
 	}
 
-	if err := s.cities.Create(city); err != nil {
+	if err := s.city.Create(city); err != nil {
 		return nil, err
 	}
+
+	fmt.Printf("created city: %v\n", city)
 
 	return &api.City{
 		Id:   city.Id,
@@ -31,7 +34,7 @@ func (s *server) CreateCity(ctx context.Context, request *api.CreateCityRequest)
 }
 
 func (s *server) FindByIdCity(ctx context.Context, request *api.FindByIdRequest) (*api.City, error) {
-	city, err := s.cities.FindById(request.Id)
+	city, err := s.city.FindById(request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +46,7 @@ func (s *server) FindByIdCity(ctx context.Context, request *api.FindByIdRequest)
 }
 
 func (s *server) FindByNameCity(ctx context.Context, request *api.FindByNameRequest) (*api.City, error) {
-	city, err := s.cities.FindByName(request.Name)
+	city, err := s.city.FindByName(request.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -55,17 +58,17 @@ func (s *server) FindByNameCity(ctx context.Context, request *api.FindByNameRequ
 }
 
 func (s *server) ListCity(ctx context.Context, request *api.ListRequest) (*api.ListCityResponse, error) {
-	cities, err := s.cities.List(int(request.Limit), int(request.Offset))
+	cities, err := s.city.List(int(request.Limit), int(request.Offset))
 	if err != nil {
 		return nil, err
 	}
 
 	response := &api.ListCityResponse{
-		Cities: make([]*api.City, 0, len(cities)),
+		Entries: make([]*api.City, 0, len(cities)),
 	}
 
 	for _, city := range cities {
-		response.Cities = append(response.Cities, &api.City{
+		response.Entries = append(response.Entries, &api.City{
 			Id:   city.Id,
 			Name: city.Name,
 		})
@@ -80,7 +83,7 @@ func (s *server) UpdateCity(ctx context.Context, request *api.City) (*api.City, 
 		Name: request.Name,
 	}
 
-	if err := s.cities.Update(city); err != nil {
+	if err := s.city.Update(city); err != nil {
 		return nil, err
 	}
 
@@ -88,7 +91,7 @@ func (s *server) UpdateCity(ctx context.Context, request *api.City) (*api.City, 
 }
 
 func (s *server) DeleteCity(ctx context.Context, request *api.FindByIdRequest) (*api.Empty, error) {
-	if err := s.cities.Delete(request.Id); err != nil {
+	if err := s.city.Delete(request.Id); err != nil {
 		return nil, err
 	}
 	return EMPTY_RESPONSE, nil

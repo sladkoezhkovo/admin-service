@@ -21,7 +21,7 @@ type Packaging struct {
 	Name string `db:"name"`
 }
 type District struct {
-	Id     int64  `db:"id"`
-	Name   string `db:"name"`
-	CityId int64  `db:"city_id"`
+	Id   int64  `db:"id"`
+	Name string `db:"name"`
+	City `db:"city"`
 }

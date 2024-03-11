@@ -9,7 +9,11 @@ import (
 	handler "github.com/sladkoezhkovo/admin-service/internal/handler"
 	"github.com/sladkoezhkovo/admin-service/internal/repository/pg"
 	cityrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/city-repository"
+	districtrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/district-repository"
+	unitrepository "github.com/sladkoezhkovo/admin-service/internal/repository/pg/unit-repository"
 	cityservice "github.com/sladkoezhkovo/admin-service/internal/service/city-service"
+	districtservice "github.com/sladkoezhkovo/admin-service/internal/service/district-service"
+	unitservice "github.com/sladkoezhkovo/admin-service/internal/service/unit-service"
 	"github.com/sladkoezhkovo/lib"
 	"google.golang.org/grpc"
 	"net"
@@ -48,19 +52,20 @@ func main() {
 		panic(fmt.Sprintf("setup database: %s", err.Error()))
 	}
 
-	fmt.Printf("\t+\ncity repository init")
 	cityRepository := cityrepository.New(db)
+	unitRepository := unitrepository.New(db)
+	districtRepository := districtrepository.New(db)
 
-	fmt.Printf("\t+\ncity service init")
 	cityService := cityservice.New(cityRepository)
-	fmt.Printf("\t+\n")
+	unitService := unitservice.New(unitRepository)
+	districtService := districtservice.New(districtRepository)
 
 	server := grpc.NewServer()
 	adapter := handler.New(
 		cityService,
+		districtService,
 		nil,
-		nil,
-		nil,
+		unitService,
 		nil,
 		nil,
 	)

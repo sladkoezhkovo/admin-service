@@ -7,40 +7,89 @@ import (
 )
 
 type PropertyTypeService interface {
-	Create(city *entity.PropertyType) error
-	FindById(id int) (*entity.PropertyType, error)
+	Create(propertyType *entity.PropertyType) error
+	FindById(id int64) (*entity.PropertyType, error)
 	FindByName(name string) (*entity.PropertyType, error)
 	List(limit, offset int) ([]*entity.PropertyType, error)
-	Update(city *entity.PropertyType) error
-	Delete(id int) error
+	Update(propertyType *entity.PropertyType) error
+	Delete(id int64) error
 }
 
 func (s *server) CreatePropertyType(ctx context.Context, request *api.CreatePropertyTypeRequest) (*api.PropertyType, error) {
-	//TODO implement me
-	panic("implement me")
+	propertyType := &entity.PropertyType{
+		Name: request.Name,
+	}
+
+	if err := s.propertyType.Create(propertyType); err != nil {
+		return nil, err
+	}
+
+	return &api.PropertyType{
+		Id:   propertyType.Id,
+		Name: propertyType.Name,
+	}, nil
 }
 
 func (s *server) FindByIdPropertyType(ctx context.Context, request *api.FindByIdRequest) (*api.PropertyType, error) {
-	//TODO implement me
-	panic("implement me")
+	propertyType, err := s.propertyType.FindById(request.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.PropertyType{
+		Id:   propertyType.Id,
+		Name: propertyType.Name,
+	}, nil
 }
 
 func (s *server) FindByNamePropertyType(ctx context.Context, request *api.FindByNameRequest) (*api.PropertyType, error) {
-	//TODO implement me
-	panic("implement me")
+	propertyType, err := s.propertyType.FindByName(request.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &api.PropertyType{
+		Id:   propertyType.Id,
+		Name: propertyType.Name,
+	}, nil
 }
 
 func (s *server) ListPropertyType(ctx context.Context, request *api.ListRequest) (*api.ListPropertyTypeResponse, error) {
-	//TODO implement me
-	panic("implement me")
+	propertyType, err := s.propertyType.List(int(request.Limit), int(request.Offset))
+	if err != nil {
+		return nil, err
+	}
+
+	response := &api.ListPropertyTypeResponse{
+		Entries: make([]*api.PropertyType, 0, len(propertyType)),
+	}
+
+	for _, propertyType := range propertyType {
+		response.Entries = append(response.Entries, &api.PropertyType{
+			Id:   propertyType.Id,
+			Name: propertyType.Name,
+		})
+	}
+
+	return response, nil
 }
 
-func (s *server) UpdatePropertyType(ctx context.Context, city *api.PropertyType) (*api.PropertyType, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *server) UpdatePropertyType(ctx context.Context, request *api.PropertyType) (*api.PropertyType, error) {
+	propertyType := &entity.PropertyType{
+		Id:   request.Id,
+		Name: request.Name,
+	}
+
+	if err := s.propertyType.Update(propertyType); err != nil {
+		return nil, err
+	}
+
+	return request, nil
 }
 
 func (s *server) DeletePropertyType(ctx context.Context, request *api.FindByIdRequest) (*api.Empty, error) {
-	//TODO implement me
-	panic("implement me")
+	if err := s.propertyType.Delete(request.Id); err != nil {
+		return nil, err
+	}
+	return EMPTY_RESPONSE, nil
 }

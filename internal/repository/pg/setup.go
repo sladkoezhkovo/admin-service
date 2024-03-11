@@ -7,6 +7,12 @@ import (
 	"os"
 )
 
+const (
+	CityTable     = "city"
+	UnitTable     = "units"
+	DistrictTable = "district"
+)
+
 func Setup(cfg *config.SqlConfig) (*sqlx.DB, error) {
 	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=%s",
