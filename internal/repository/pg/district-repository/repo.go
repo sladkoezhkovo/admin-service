@@ -81,12 +81,13 @@ func (c *districtRepository) List(limit, offset int) ([]*entity.District, error)
 }
 
 func (c *districtRepository) Update(district *entity.District) error {
+	fmt.Printf("%s: district to update: %v\n", pg.DistrictTable, district)
 	return c.db.Get(district,
 		fmt.Sprintf(`UPDATE %s
 				SET
 					name = $1,
 					city_id = $2
-				WHERE id = $3 RETURNING *`, pg.DistrictTable),
+				WHERE id = $3 RETURNING id, name, city_id as "city.id"`, pg.DistrictTable),
 		district.Name,
 		district.City.Id,
 		district.Id,

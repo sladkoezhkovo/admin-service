@@ -89,6 +89,9 @@ func (s *server) UpdateDistrict(ctx context.Context, request *api.UpdateDistrict
 	district := &entity.District{
 		Id:   request.Id,
 		Name: request.Name,
+		City: entity.City{
+			Id: request.CityId,
+		},
 	}
 
 	if err := s.district.Update(district); err != nil {
