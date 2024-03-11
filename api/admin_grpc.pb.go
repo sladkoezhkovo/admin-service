@@ -47,7 +47,7 @@ type AdminServiceClient interface {
 	ListPackaging(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListPackagingResponse, error)
 	ListConfectionaryType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error)
 	UpdateCity(ctx context.Context, in *City, opts ...grpc.CallOption) (*City, error)
-	UpdateDistrict(ctx context.Context, in *District, opts ...grpc.CallOption) (*District, error)
+	UpdateDistrict(ctx context.Context, in *UpdateDistrictRequest, opts ...grpc.CallOption) (*District, error)
 	UpdatePropertyType(ctx context.Context, in *PropertyType, opts ...grpc.CallOption) (*PropertyType, error)
 	UpdateUnit(ctx context.Context, in *Unit, opts ...grpc.CallOption) (*Unit, error)
 	UpdatePackaging(ctx context.Context, in *Packaging, opts ...grpc.CallOption) (*Packaging, error)
@@ -293,7 +293,7 @@ func (c *adminServiceClient) UpdateCity(ctx context.Context, in *City, opts ...g
 	return out, nil
 }
 
-func (c *adminServiceClient) UpdateDistrict(ctx context.Context, in *District, opts ...grpc.CallOption) (*District, error) {
+func (c *adminServiceClient) UpdateDistrict(ctx context.Context, in *UpdateDistrictRequest, opts ...grpc.CallOption) (*District, error) {
 	out := new(District)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/UpdateDistrict", in, out, opts...)
 	if err != nil {
@@ -421,7 +421,7 @@ type AdminServiceServer interface {
 	ListPackaging(context.Context, *ListRequest) (*ListPackagingResponse, error)
 	ListConfectionaryType(context.Context, *ListRequest) (*ListConfectionaryTypeResponse, error)
 	UpdateCity(context.Context, *City) (*City, error)
-	UpdateDistrict(context.Context, *District) (*District, error)
+	UpdateDistrict(context.Context, *UpdateDistrictRequest) (*District, error)
 	UpdatePropertyType(context.Context, *PropertyType) (*PropertyType, error)
 	UpdateUnit(context.Context, *Unit) (*Unit, error)
 	UpdatePackaging(context.Context, *Packaging) (*Packaging, error)
@@ -514,7 +514,7 @@ func (UnimplementedAdminServiceServer) ListConfectionaryType(context.Context, *L
 func (UnimplementedAdminServiceServer) UpdateCity(context.Context, *City) (*City, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateCity not implemented")
 }
-func (UnimplementedAdminServiceServer) UpdateDistrict(context.Context, *District) (*District, error) {
+func (UnimplementedAdminServiceServer) UpdateDistrict(context.Context, *UpdateDistrictRequest) (*District, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDistrict not implemented")
 }
 func (UnimplementedAdminServiceServer) UpdatePropertyType(context.Context, *PropertyType) (*PropertyType, error) {
@@ -1011,7 +1011,7 @@ func _AdminService_UpdateCity_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _AdminService_UpdateDistrict_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(District)
+	in := new(UpdateDistrictRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1023,7 +1023,7 @@ func _AdminService_UpdateDistrict_Handler(srv interface{}, ctx context.Context, 
 		FullMethod: "/admin.AdminService/UpdateDistrict",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).UpdateDistrict(ctx, req.(*District))
+		return srv.(AdminServiceServer).UpdateDistrict(ctx, req.(*UpdateDistrictRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
