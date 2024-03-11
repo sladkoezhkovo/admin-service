@@ -78,6 +78,7 @@ func (s *server) ListDistrict(ctx context.Context, request *api.ListRequest) (*a
 		response.Entries = append(response.Entries, &api.District{
 			Id:   district.Id,
 			Name: district.Name,
+			City: district.City.Name,
 		})
 	}
 

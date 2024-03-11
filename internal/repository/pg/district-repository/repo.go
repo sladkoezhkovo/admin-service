@@ -65,7 +65,13 @@ func (c *districtRepository) List(limit, offset int) ([]*entity.District, error)
 	var cities []*entity.District
 	if err := c.db.Select(
 		&cities,
-		fmt.Sprintf(`SELECT c.id, c.name, c.city_id as "city.id"  FROM %s c ORDER BY id LIMIT $1 OFFSET $2`, pg.DistrictTable),
+		fmt.Sprintf(
+			`SELECT 
+						d.id, d.name, c.name as "city.name"  
+					FROM %s d 
+					INNER JOIN %s c ON d.city_id = c.id	
+					ORDER BY d.id 
+					LIMIT $1 OFFSET $2`, pg.DistrictTable, pg.CityTable),
 		limit,
 		offset,
 	); err != nil {
