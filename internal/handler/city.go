@@ -2,16 +2,14 @@ package handler
 
 import (
 	"context"
-	"fmt"
-	"github.com/sladkoezhkovo/admin-service/api"
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
 
 type CityService interface {
 	Create(city *entity.City) error
 	FindById(id int64) (*entity.City, error)
-	ListByName(name string, limit, offset int32) ([]*entity.City, error)
-	List(limit, offset int) ([]*entity.City, error)
+	List(limit, offset int) ([]*entity.City, int64, error)
 	Update(city *entity.City) error
 	Delete(id int64) error
 }
@@ -24,8 +22,6 @@ func (s *server) CreateCity(ctx context.Context, request *api.CreateCityRequest)
 	if err := s.city.Create(city); err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("created city: %v\n", city)
 
 	return &api.City{
 		Id:   city.Id,
@@ -45,34 +41,15 @@ func (s *server) FindByIdCity(ctx context.Context, request *api.FindByIdRequest)
 	}, nil
 }
 
-func (s *server) ListByNameCity(ctx context.Context, request *api.ListByNameRequest) (*api.ListCityResponse, error) {
-	entries, err := s.city.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
+func (s *server) ListCity(ctx context.Context, request *api.Bounds) (*api.ListCityResponse, error) {
+
+	cities, count, err := s.city.List(int(request.Limit), int(request.Offset))
 	if err != nil {
 		return nil, err
 	}
-
-	response := &api.ListCityResponse{
-		Entries: make([]*api.City, 0, len(entries)),
-	}
-
-	for _, e := range entries {
-		response.Entries = append(response.Entries, &api.City{
-			Id:   e.Id,
-			Name: e.Name,
-		})
-
-	}
-	return response, nil
-}
-
-func (s *server) ListCity(ctx context.Context, request *api.ListRequest) (*api.ListCityResponse, error) {
-	cities, err := s.city.List(int(request.Limit), int(request.Offset))
-	if err != nil {
-		return nil, err
-	}
-
 	response := &api.ListCityResponse{
 		Entries: make([]*api.City, 0, len(cities)),
+		Count:   count,
 	}
 
 	for _, city := range cities {

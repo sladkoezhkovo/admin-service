@@ -11,8 +11,7 @@ import (
 type CityRepository interface {
 	Create(city *entity.City) error
 	FindById(id int64) (*entity.City, error)
-	ListByName(name string, limit, offset int32) ([]*entity.City, error)
-	List(limit, offset int) ([]*entity.City, error)
+	List(limit, offset int) ([]*entity.City, int64, error)
 	Update(city *entity.City) error
 	Delete(id int64) error
 }
@@ -56,34 +55,22 @@ func (c *cityService) FindById(id int64) (*entity.City, error) {
 	return city, nil
 }
 
-func (c *cityService) ListByName(name string, limit, offset int32) ([]*entity.City, error) {
-	city, err := c.repository.ListByName(name, limit, offset)
-	if err != nil {
-		var pgerr *pq.Error
-		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
-		}
-		return nil, err
-	}
-	return city, nil
-}
-
-func (c *cityService) List(limit, offset int) ([]*entity.City, error) {
+func (c *cityService) List(limit, offset int) ([]*entity.City, int64, error) {
 	if !(limit > 0) {
-		return nil, service.ErrInvalidLimit
+		return nil, 0, service.ErrInvalidLimit
 	} else if offset < 0 {
-		return nil, service.ErrInvalidOffset
+		return nil, 0, service.ErrInvalidOffset
 	}
 
-	cities, err := c.repository.List(limit, offset)
+	cc, count, err := c.repository.List(limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
+			return nil, 0, pgerr
 		}
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	return cc, count, nil
 }
 
 func (c *cityService) Update(city *entity.City) error {

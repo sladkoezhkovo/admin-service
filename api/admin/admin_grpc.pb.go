@@ -4,7 +4,7 @@
 // - protoc             v5.26.0--rc3
 // source: proto/admin.proto
 
-package api
+package admin
 
 import (
 	context "context"
@@ -34,18 +34,13 @@ type AdminServiceClient interface {
 	FindByIdUnit(ctx context.Context, in *FindByIdRequest, opts ...grpc.CallOption) (*Unit, error)
 	FindByIdPackaging(ctx context.Context, in *FindByIdRequest, opts ...grpc.CallOption) (*Packaging, error)
 	FindByIdConfectionaryType(ctx context.Context, in *FindByIdRequest, opts ...grpc.CallOption) (*ConfectionaryType, error)
-	ListByNameCity(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListCityResponse, error)
-	ListByNameDistrict(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListDistrictResponse, error)
-	ListByNamePropertyType(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error)
-	ListByNameUnit(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListUnitResponse, error)
-	ListByNamePackaging(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListPackagingResponse, error)
-	ListByNameConfectionaryType(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error)
-	ListCity(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListCityResponse, error)
-	ListDistrict(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListDistrictResponse, error)
-	ListPropertyType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error)
-	ListUnit(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListUnitResponse, error)
-	ListPackaging(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListPackagingResponse, error)
-	ListConfectionaryType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error)
+	// TODO wrap bounds into filtering messages
+	ListCity(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListCityResponse, error)
+	ListDistrict(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListDistrictResponse, error)
+	ListPropertyType(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error)
+	ListUnit(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListUnitResponse, error)
+	ListPackaging(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListPackagingResponse, error)
+	ListConfectionaryType(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error)
 	UpdateCity(ctx context.Context, in *City, opts ...grpc.CallOption) (*City, error)
 	UpdateDistrict(ctx context.Context, in *UpdateDistrictRequest, opts ...grpc.CallOption) (*District, error)
 	UpdatePropertyType(ctx context.Context, in *PropertyType, opts ...grpc.CallOption) (*PropertyType, error)
@@ -176,61 +171,7 @@ func (c *adminServiceClient) FindByIdConfectionaryType(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *adminServiceClient) ListByNameCity(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListCityResponse, error) {
-	out := new(ListCityResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNameCity", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListByNameDistrict(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListDistrictResponse, error) {
-	out := new(ListDistrictResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNameDistrict", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListByNamePropertyType(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error) {
-	out := new(ListPropertyTypeResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNamePropertyType", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListByNameUnit(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListUnitResponse, error) {
-	out := new(ListUnitResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNameUnit", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListByNamePackaging(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListPackagingResponse, error) {
-	out := new(ListPackagingResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNamePackaging", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListByNameConfectionaryType(ctx context.Context, in *ListByNameRequest, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error) {
-	out := new(ListConfectionaryTypeResponse)
-	err := c.cc.Invoke(ctx, "/admin.AdminService/ListByNameConfectionaryType", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *adminServiceClient) ListCity(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListCityResponse, error) {
+func (c *adminServiceClient) ListCity(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListCityResponse, error) {
 	out := new(ListCityResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListCity", in, out, opts...)
 	if err != nil {
@@ -239,7 +180,7 @@ func (c *adminServiceClient) ListCity(ctx context.Context, in *ListRequest, opts
 	return out, nil
 }
 
-func (c *adminServiceClient) ListDistrict(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListDistrictResponse, error) {
+func (c *adminServiceClient) ListDistrict(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListDistrictResponse, error) {
 	out := new(ListDistrictResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListDistrict", in, out, opts...)
 	if err != nil {
@@ -248,7 +189,7 @@ func (c *adminServiceClient) ListDistrict(ctx context.Context, in *ListRequest, 
 	return out, nil
 }
 
-func (c *adminServiceClient) ListPropertyType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error) {
+func (c *adminServiceClient) ListPropertyType(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListPropertyTypeResponse, error) {
 	out := new(ListPropertyTypeResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListPropertyType", in, out, opts...)
 	if err != nil {
@@ -257,7 +198,7 @@ func (c *adminServiceClient) ListPropertyType(ctx context.Context, in *ListReque
 	return out, nil
 }
 
-func (c *adminServiceClient) ListUnit(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListUnitResponse, error) {
+func (c *adminServiceClient) ListUnit(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListUnitResponse, error) {
 	out := new(ListUnitResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListUnit", in, out, opts...)
 	if err != nil {
@@ -266,7 +207,7 @@ func (c *adminServiceClient) ListUnit(ctx context.Context, in *ListRequest, opts
 	return out, nil
 }
 
-func (c *adminServiceClient) ListPackaging(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListPackagingResponse, error) {
+func (c *adminServiceClient) ListPackaging(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListPackagingResponse, error) {
 	out := new(ListPackagingResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListPackaging", in, out, opts...)
 	if err != nil {
@@ -275,7 +216,7 @@ func (c *adminServiceClient) ListPackaging(ctx context.Context, in *ListRequest,
 	return out, nil
 }
 
-func (c *adminServiceClient) ListConfectionaryType(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error) {
+func (c *adminServiceClient) ListConfectionaryType(ctx context.Context, in *Bounds, opts ...grpc.CallOption) (*ListConfectionaryTypeResponse, error) {
 	out := new(ListConfectionaryTypeResponse)
 	err := c.cc.Invoke(ctx, "/admin.AdminService/ListConfectionaryType", in, out, opts...)
 	if err != nil {
@@ -408,18 +349,13 @@ type AdminServiceServer interface {
 	FindByIdUnit(context.Context, *FindByIdRequest) (*Unit, error)
 	FindByIdPackaging(context.Context, *FindByIdRequest) (*Packaging, error)
 	FindByIdConfectionaryType(context.Context, *FindByIdRequest) (*ConfectionaryType, error)
-	ListByNameCity(context.Context, *ListByNameRequest) (*ListCityResponse, error)
-	ListByNameDistrict(context.Context, *ListByNameRequest) (*ListDistrictResponse, error)
-	ListByNamePropertyType(context.Context, *ListByNameRequest) (*ListPropertyTypeResponse, error)
-	ListByNameUnit(context.Context, *ListByNameRequest) (*ListUnitResponse, error)
-	ListByNamePackaging(context.Context, *ListByNameRequest) (*ListPackagingResponse, error)
-	ListByNameConfectionaryType(context.Context, *ListByNameRequest) (*ListConfectionaryTypeResponse, error)
-	ListCity(context.Context, *ListRequest) (*ListCityResponse, error)
-	ListDistrict(context.Context, *ListRequest) (*ListDistrictResponse, error)
-	ListPropertyType(context.Context, *ListRequest) (*ListPropertyTypeResponse, error)
-	ListUnit(context.Context, *ListRequest) (*ListUnitResponse, error)
-	ListPackaging(context.Context, *ListRequest) (*ListPackagingResponse, error)
-	ListConfectionaryType(context.Context, *ListRequest) (*ListConfectionaryTypeResponse, error)
+	// TODO wrap bounds into filtering messages
+	ListCity(context.Context, *Bounds) (*ListCityResponse, error)
+	ListDistrict(context.Context, *Bounds) (*ListDistrictResponse, error)
+	ListPropertyType(context.Context, *Bounds) (*ListPropertyTypeResponse, error)
+	ListUnit(context.Context, *Bounds) (*ListUnitResponse, error)
+	ListPackaging(context.Context, *Bounds) (*ListPackagingResponse, error)
+	ListConfectionaryType(context.Context, *Bounds) (*ListConfectionaryTypeResponse, error)
 	UpdateCity(context.Context, *City) (*City, error)
 	UpdateDistrict(context.Context, *UpdateDistrictRequest) (*District, error)
 	UpdatePropertyType(context.Context, *PropertyType) (*PropertyType, error)
@@ -475,40 +411,22 @@ func (UnimplementedAdminServiceServer) FindByIdPackaging(context.Context, *FindB
 func (UnimplementedAdminServiceServer) FindByIdConfectionaryType(context.Context, *FindByIdRequest) (*ConfectionaryType, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindByIdConfectionaryType not implemented")
 }
-func (UnimplementedAdminServiceServer) ListByNameCity(context.Context, *ListByNameRequest) (*ListCityResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNameCity not implemented")
-}
-func (UnimplementedAdminServiceServer) ListByNameDistrict(context.Context, *ListByNameRequest) (*ListDistrictResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNameDistrict not implemented")
-}
-func (UnimplementedAdminServiceServer) ListByNamePropertyType(context.Context, *ListByNameRequest) (*ListPropertyTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNamePropertyType not implemented")
-}
-func (UnimplementedAdminServiceServer) ListByNameUnit(context.Context, *ListByNameRequest) (*ListUnitResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNameUnit not implemented")
-}
-func (UnimplementedAdminServiceServer) ListByNamePackaging(context.Context, *ListByNameRequest) (*ListPackagingResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNamePackaging not implemented")
-}
-func (UnimplementedAdminServiceServer) ListByNameConfectionaryType(context.Context, *ListByNameRequest) (*ListConfectionaryTypeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListByNameConfectionaryType not implemented")
-}
-func (UnimplementedAdminServiceServer) ListCity(context.Context, *ListRequest) (*ListCityResponse, error) {
+func (UnimplementedAdminServiceServer) ListCity(context.Context, *Bounds) (*ListCityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCity not implemented")
 }
-func (UnimplementedAdminServiceServer) ListDistrict(context.Context, *ListRequest) (*ListDistrictResponse, error) {
+func (UnimplementedAdminServiceServer) ListDistrict(context.Context, *Bounds) (*ListDistrictResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDistrict not implemented")
 }
-func (UnimplementedAdminServiceServer) ListPropertyType(context.Context, *ListRequest) (*ListPropertyTypeResponse, error) {
+func (UnimplementedAdminServiceServer) ListPropertyType(context.Context, *Bounds) (*ListPropertyTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPropertyType not implemented")
 }
-func (UnimplementedAdminServiceServer) ListUnit(context.Context, *ListRequest) (*ListUnitResponse, error) {
+func (UnimplementedAdminServiceServer) ListUnit(context.Context, *Bounds) (*ListUnitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUnit not implemented")
 }
-func (UnimplementedAdminServiceServer) ListPackaging(context.Context, *ListRequest) (*ListPackagingResponse, error) {
+func (UnimplementedAdminServiceServer) ListPackaging(context.Context, *Bounds) (*ListPackagingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPackaging not implemented")
 }
-func (UnimplementedAdminServiceServer) ListConfectionaryType(context.Context, *ListRequest) (*ListConfectionaryTypeResponse, error) {
+func (UnimplementedAdminServiceServer) ListConfectionaryType(context.Context, *Bounds) (*ListConfectionaryTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListConfectionaryType not implemented")
 }
 func (UnimplementedAdminServiceServer) UpdateCity(context.Context, *City) (*City, error) {
@@ -776,116 +694,8 @@ func _AdminService_FindByIdConfectionaryType_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AdminService_ListByNameCity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNameCity(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNameCity",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNameCity(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdminService_ListByNameDistrict_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNameDistrict(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNameDistrict",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNameDistrict(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdminService_ListByNamePropertyType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNamePropertyType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNamePropertyType",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNamePropertyType(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdminService_ListByNameUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNameUnit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNameUnit",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNameUnit(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdminService_ListByNamePackaging_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNamePackaging(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNamePackaging",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNamePackaging(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AdminService_ListByNameConfectionaryType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListByNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AdminServiceServer).ListByNameConfectionaryType(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/admin.AdminService/ListByNameConfectionaryType",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListByNameConfectionaryType(ctx, req.(*ListByNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AdminService_ListCity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -897,13 +707,13 @@ func _AdminService_ListCity_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/admin.AdminService/ListCity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListCity(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListCity(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AdminService_ListDistrict_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -915,13 +725,13 @@ func _AdminService_ListDistrict_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: "/admin.AdminService/ListDistrict",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListDistrict(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListDistrict(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AdminService_ListPropertyType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -933,13 +743,13 @@ func _AdminService_ListPropertyType_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/admin.AdminService/ListPropertyType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListPropertyType(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListPropertyType(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AdminService_ListUnit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -951,13 +761,13 @@ func _AdminService_ListUnit_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/admin.AdminService/ListUnit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListUnit(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListUnit(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AdminService_ListPackaging_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -969,13 +779,13 @@ func _AdminService_ListPackaging_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/admin.AdminService/ListPackaging",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListPackaging(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListPackaging(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _AdminService_ListConfectionaryType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListRequest)
+	in := new(Bounds)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -987,7 +797,7 @@ func _AdminService_ListConfectionaryType_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/admin.AdminService/ListConfectionaryType",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AdminServiceServer).ListConfectionaryType(ctx, req.(*ListRequest))
+		return srv.(AdminServiceServer).ListConfectionaryType(ctx, req.(*Bounds))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1262,30 +1072,6 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindByIdConfectionaryType",
 			Handler:    _AdminService_FindByIdConfectionaryType_Handler,
-		},
-		{
-			MethodName: "ListByNameCity",
-			Handler:    _AdminService_ListByNameCity_Handler,
-		},
-		{
-			MethodName: "ListByNameDistrict",
-			Handler:    _AdminService_ListByNameDistrict_Handler,
-		},
-		{
-			MethodName: "ListByNamePropertyType",
-			Handler:    _AdminService_ListByNamePropertyType_Handler,
-		},
-		{
-			MethodName: "ListByNameUnit",
-			Handler:    _AdminService_ListByNameUnit_Handler,
-		},
-		{
-			MethodName: "ListByNamePackaging",
-			Handler:    _AdminService_ListByNamePackaging_Handler,
-		},
-		{
-			MethodName: "ListByNameConfectionaryType",
-			Handler:    _AdminService_ListByNameConfectionaryType_Handler,
 		},
 		{
 			MethodName: "ListCity",

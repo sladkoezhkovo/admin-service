@@ -1,7 +1,7 @@
 package converter
 
 import (
-	"github.com/sladkoezhkovo/admin-service/api"
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
 

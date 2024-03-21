@@ -11,8 +11,7 @@ import (
 type PropertyTypeRepository interface {
 	Create(pt *entity.PropertyType) error
 	FindById(id int64) (*entity.PropertyType, error)
-	ListByName(name string, limit, offset int32) ([]*entity.PropertyType, error)
-	List(limit, offset int) ([]*entity.PropertyType, error)
+	List(limit, offset int) ([]*entity.PropertyType, int64, error)
 	Update(pt *entity.PropertyType) error
 	Delete(id int64) error
 }
@@ -56,34 +55,22 @@ func (c *ptService) FindById(id int64) (*entity.PropertyType, error) {
 	return pt, nil
 }
 
-func (c *ptService) ListByName(name string, limit, offset int32) ([]*entity.PropertyType, error) {
-	pt, err := c.repository.ListByName(name, limit, offset)
-	if err != nil {
-		var pgerr *pq.Error
-		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
-		}
-		return nil, err
-	}
-	return pt, nil
-}
-
-func (c *ptService) List(limit, offset int) ([]*entity.PropertyType, error) {
+func (c *ptService) List(limit, offset int) ([]*entity.PropertyType, int64, error) {
 	if !(limit > 0) {
-		return nil, service.ErrInvalidLimit
+		return nil, 0, service.ErrInvalidLimit
 	} else if offset < 0 {
-		return nil, service.ErrInvalidOffset
+		return nil, 0, service.ErrInvalidOffset
 	}
 
-	cities, err := c.repository.List(limit, offset)
+	ptpt, count, err := c.repository.List(limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
+			return nil, 0, pgerr
 		}
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	return ptpt, count, nil
 }
 
 func (c *ptService) Update(pt *entity.PropertyType) error {

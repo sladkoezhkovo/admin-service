@@ -2,15 +2,14 @@ package handler
 
 import (
 	"context"
-	"github.com/sladkoezhkovo/admin-service/api"
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
 
 type PackagingService interface {
 	Create(packaging *entity.Packaging) error
 	FindById(id int64) (*entity.Packaging, error)
-	ListByName(name string, limit, offset int32) ([]*entity.Packaging, error)
-	List(limit, offset int) ([]*entity.Packaging, error)
+	List(limit, offset int) ([]*entity.Packaging, int64, error)
 	Update(packaging *entity.Packaging) error
 	Delete(id int64) error
 }
@@ -42,23 +41,24 @@ func (s *server) FindByIdPackaging(ctx context.Context, request *api.FindByIdReq
 	}, nil
 }
 
-func (s *server) ListByNamePackaging(ctx context.Context, request *api.ListByNameRequest) (*api.ListPackagingResponse, error) {
-	entries, err := s.packaging.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
+func (s *server) ListPackaging(ctx context.Context, request *api.Bounds) (*api.ListPackagingResponse, error) {
+	pp, count, err := s.packaging.List(int(request.Limit), int(request.Offset))
 	if err != nil {
 		return nil, err
 	}
 
 	response := &api.ListPackagingResponse{
-		Entries: make([]*api.Packaging, 0, len(entries)),
+		Entries: make([]*api.Packaging, 0, len(pp)),
+		Count:   count,
 	}
 
-	for _, e := range entries {
+	for _, p := range pp {
 		response.Entries = append(response.Entries, &api.Packaging{
-			Id:   e.Id,
-			Name: e.Name,
+			Id:   p.Id,
+			Name: p.Name,
 		})
-
 	}
+
 	return response, nil
 }
 

@@ -39,29 +39,21 @@ func (c *packagingRepository) FindById(id int64) (*entity.Packaging, error) {
 	return &packaging, nil
 }
 
-func (c *packagingRepository) ListByName(name string, limit, offset int32) ([]*entity.Packaging, error) {
+func (c *packagingRepository) List(limit, offset int) ([]*entity.Packaging, int64, error) {
 	var pp []*entity.Packaging
 	if err := c.db.Select(
 		&pp,
-		fmt.Sprintf(`SELECT * FROM %s WHERE name ILIKE  $1  LIMIT $2 OFFSET $3`, pg.PackagingTable),
-		"%"+name+"%", limit, offset,
-	); err != nil {
-		return nil, err
-	}
-	return pp, nil
-}
-
-func (c *packagingRepository) List(limit, offset int) ([]*entity.Packaging, error) {
-	var cities []*entity.Packaging
-	if err := c.db.Select(
-		&cities,
 		fmt.Sprintf("SELECT * FROM %s ORDER BY id LIMIT $1 OFFSET $2", pg.PackagingTable),
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.PackagingTable)); err != nil {
+		return nil, 0, err
+	}
+	return pp, count, nil
 }
 
 func (c *packagingRepository) Update(packaging *entity.Packaging) error {

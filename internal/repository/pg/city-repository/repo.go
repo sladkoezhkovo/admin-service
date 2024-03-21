@@ -39,19 +39,7 @@ func (c *cityRepository) FindById(id int64) (*entity.City, error) {
 	return &city, nil
 }
 
-func (c *cityRepository) ListByName(name string, limit, offset int32) ([]*entity.City, error) {
-	var cc []*entity.City
-	if err := c.db.Select(
-		&cc,
-		fmt.Sprintf(`SELECT * FROM %s WHERE name ILIKE  $1  LIMIT $2 OFFSET $3`, pg.CityTable),
-		"%"+name+"%", limit, offset,
-	); err != nil {
-		return nil, err
-	}
-	return cc, nil
-}
-
-func (c *cityRepository) List(limit, offset int) ([]*entity.City, error) {
+func (c *cityRepository) List(limit, offset int) ([]*entity.City, int64, error) {
 	var cities []*entity.City
 	if err := c.db.Select(
 		&cities,
@@ -59,9 +47,13 @@ func (c *cityRepository) List(limit, offset int) ([]*entity.City, error) {
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.CityTable)); err != nil {
+		return nil, 0, err
+	}
+	return cities, count, nil
 }
 
 func (c *cityRepository) Update(city *entity.City) error {

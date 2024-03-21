@@ -2,15 +2,14 @@ package handler
 
 import (
 	"context"
-	"github.com/sladkoezhkovo/admin-service/api"
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
 
 type PropertyTypeService interface {
 	Create(propertyType *entity.PropertyType) error
 	FindById(id int64) (*entity.PropertyType, error)
-	ListByName(name string, limit, offset int32) ([]*entity.PropertyType, error)
-	List(limit, offset int) ([]*entity.PropertyType, error)
+	List(limit, offset int) ([]*entity.PropertyType, int64, error)
 	Update(propertyType *entity.PropertyType) error
 	Delete(id int64) error
 }
@@ -42,37 +41,18 @@ func (s *server) FindByIdPropertyType(ctx context.Context, request *api.FindById
 	}, nil
 }
 
-func (s *server) ListByNamePropertyType(ctx context.Context, request *api.ListByNameRequest) (*api.ListPropertyTypeResponse, error) {
-	entries, err := s.propertyType.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
+func (s *server) ListPropertyType(ctx context.Context, request *api.Bounds) (*api.ListPropertyTypeResponse, error) {
+	ptpt, count, err := s.propertyType.List(int(request.Limit), int(request.Offset))
 	if err != nil {
 		return nil, err
 	}
 
 	response := &api.ListPropertyTypeResponse{
-		Entries: make([]*api.PropertyType, 0, len(entries)),
+		Entries: make([]*api.PropertyType, 0, len(ptpt)),
+		Count:   count,
 	}
 
-	for _, e := range entries {
-		response.Entries = append(response.Entries, &api.PropertyType{
-			Id:   e.Id,
-			Name: e.Name,
-		})
-
-	}
-	return response, nil
-}
-
-func (s *server) ListPropertyType(ctx context.Context, request *api.ListRequest) (*api.ListPropertyTypeResponse, error) {
-	propertyType, err := s.propertyType.List(int(request.Limit), int(request.Offset))
-	if err != nil {
-		return nil, err
-	}
-
-	response := &api.ListPropertyTypeResponse{
-		Entries: make([]*api.PropertyType, 0, len(propertyType)),
-	}
-
-	for _, propertyType := range propertyType {
+	for _, propertyType := range ptpt {
 		response.Entries = append(response.Entries, &api.PropertyType{
 			Id:   propertyType.Id,
 			Name: propertyType.Name,

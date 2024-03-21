@@ -11,8 +11,7 @@ import (
 type PackagingRepository interface {
 	Create(packaging *entity.Packaging) error
 	FindById(id int64) (*entity.Packaging, error)
-	ListByName(name string, limit, offset int32) ([]*entity.Packaging, error)
-	List(limit, offset int) ([]*entity.Packaging, error)
+	List(limit, offset int) ([]*entity.Packaging, int64, error)
 	Update(packaging *entity.Packaging) error
 	Delete(id int64) error
 }
@@ -56,34 +55,22 @@ func (c *packagingService) FindById(id int64) (*entity.Packaging, error) {
 	return packaging, nil
 }
 
-func (c *packagingService) ListByName(name string, limit, offset int32) ([]*entity.Packaging, error) {
-	packaging, err := c.repository.ListByName(name, limit, offset)
-	if err != nil {
-		var pgerr *pq.Error
-		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
-		}
-		return nil, err
-	}
-	return packaging, nil
-}
-
-func (c *packagingService) List(limit, offset int) ([]*entity.Packaging, error) {
+func (c *packagingService) List(limit, offset int) ([]*entity.Packaging, int64, error) {
 	if !(limit > 0) {
-		return nil, service.ErrInvalidLimit
+		return nil, 0, service.ErrInvalidLimit
 	} else if offset < 0 {
-		return nil, service.ErrInvalidOffset
+		return nil, 0, service.ErrInvalidOffset
 	}
 
-	cities, err := c.repository.List(limit, offset)
+	cities, count, err := c.repository.List(limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
+			return nil, 0, pgerr
 		}
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	return cities, count, nil
 }
 
 func (c *packagingService) Update(packaging *entity.Packaging) error {

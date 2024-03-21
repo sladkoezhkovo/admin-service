@@ -39,29 +39,21 @@ func (c *unitRepository) FindById(id int64) (*entity.Unit, error) {
 	return &unit, nil
 }
 
-func (c *unitRepository) ListByName(name string, limit, offset int32) ([]*entity.Unit, error) {
+func (c *unitRepository) List(limit, offset int) ([]*entity.Unit, int64, error) {
 	var uu []*entity.Unit
 	if err := c.db.Select(
 		&uu,
-		fmt.Sprintf("SELECT * FROM %s WHERE name ILIKE $1 LIMIT $2 OFFSET $3", pg.UnitTable),
-		"%"+name+"%", limit, offset,
-	); err != nil {
-		return nil, err
-	}
-	return uu, nil
-}
-
-func (c *unitRepository) List(limit, offset int) ([]*entity.Unit, error) {
-	var cities []*entity.Unit
-	if err := c.db.Select(
-		&cities,
 		fmt.Sprintf("SELECT * FROM %s ORDER BY id LIMIT $1 OFFSET $2", pg.UnitTable),
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.UnitTable)); err != nil {
+		return nil, 0, err
+	}
+	return uu, count, nil
 }
 
 func (c *unitRepository) Update(unit *entity.Unit) error {

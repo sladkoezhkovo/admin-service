@@ -1,6 +1,10 @@
 package handler
 
-import "github.com/sladkoezhkovo/admin-service/api"
+import (
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
+	"log/slog"
+	"os"
+)
 
 // var _ (api.AdminServiceServer) = (*server)(nil)
 
@@ -10,6 +14,8 @@ var (
 
 type server struct {
 	api.UnimplementedAdminServiceServer
+
+	logger *slog.Logger
 
 	city              CityService
 	district          DistrictService
@@ -28,6 +34,7 @@ func New(
 	confectionaryTypeService ConfectionaryTypeService,
 ) *server {
 	return &server{
+		logger:            slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})),
 		city:              cityService,
 		district:          districtService,
 		packaging:         packagingService,

@@ -11,8 +11,7 @@ import (
 type ConfectionaryTypeRepository interface {
 	Create(confectionary *entity.ConfectionaryType) error
 	FindById(id int64) (*entity.ConfectionaryType, error)
-	ListByName(name string, limit, offset int32) ([]*entity.ConfectionaryType, error)
-	List(limit, offset int) ([]*entity.ConfectionaryType, error)
+	List(limit, offset int) ([]*entity.ConfectionaryType, int64, error)
 	Update(confectionary *entity.ConfectionaryType) error
 	Delete(id int64) error
 }
@@ -56,34 +55,22 @@ func (c *confectionaryService) FindById(id int64) (*entity.ConfectionaryType, er
 	return confectionary, nil
 }
 
-func (c *confectionaryService) ListByName(name string, limit, offset int32) ([]*entity.ConfectionaryType, error) {
-	confectionary, err := c.repository.ListByName(name, limit, offset)
-	if err != nil {
-		var pgerr *pq.Error
-		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
-		}
-		return nil, err
-	}
-	return confectionary, nil
-}
-
-func (c *confectionaryService) List(limit, offset int) ([]*entity.ConfectionaryType, error) {
+func (c *confectionaryService) List(limit, offset int) ([]*entity.ConfectionaryType, int64, error) {
 	if !(limit > 0) {
-		return nil, service.ErrInvalidLimit
+		return nil, 0, service.ErrInvalidLimit
 	} else if offset < 0 {
-		return nil, service.ErrInvalidOffset
+		return nil, 0, service.ErrInvalidOffset
 	}
 
-	cities, err := c.repository.List(limit, offset)
+	ctct, count, err := c.repository.List(limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
+			return nil, 0, pgerr
 		}
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	return ctct, count, nil
 }
 
 func (c *confectionaryService) Update(confectionary *entity.ConfectionaryType) error {

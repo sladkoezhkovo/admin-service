@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
-	"github.com/sladkoezhkovo/admin-service/api"
+	api "github.com/sladkoezhkovo/admin-service/api/admin"
 	"github.com/sladkoezhkovo/admin-service/internal/converter"
 	"github.com/sladkoezhkovo/admin-service/internal/entity"
 )
@@ -11,8 +11,7 @@ import (
 type DistrictService interface {
 	Create(district *entity.District) error
 	FindById(id int64) (*entity.District, error)
-	ListByName(name string, limit, offset int32) ([]*entity.District, error)
-	List(limit, offset int) ([]*entity.District, error)
+	List(limit, offset int) ([]*entity.District, int64, error)
 	Update(district *entity.District) error
 	Delete(id int64) error
 }
@@ -52,34 +51,15 @@ func (s *server) FindByIdDistrict(ctx context.Context, request *api.FindByIdRequ
 	return response, nil
 }
 
-func (s *server) ListByNameDistrict(ctx context.Context, request *api.ListByNameRequest) (*api.ListDistrictResponse, error) {
-	dd, err := s.district.ListByName(request.Name, request.Bounds.Limit, request.Bounds.Offset)
-	if err != nil {
-		return nil, err
-	}
-
-	response := &api.ListDistrictResponse{
-		Entries: make([]*api.District, 0, len(dd)),
-	}
-
-	for _, d := range dd {
-		response.Entries = append(response.Entries, &api.District{
-			Id:   d.Id,
-			Name: d.Name,
-			City: d.City.Name,
-		})
-	}
-	return response, nil
-}
-
-func (s *server) ListDistrict(ctx context.Context, request *api.ListRequest) (*api.ListDistrictResponse, error) {
-	districts, err := s.district.List(int(request.Limit), int(request.Offset))
+func (s *server) ListDistrict(ctx context.Context, request *api.Bounds) (*api.ListDistrictResponse, error) {
+	districts, count, err := s.district.List(int(request.Limit), int(request.Offset))
 	if err != nil {
 		return nil, err
 	}
 
 	response := &api.ListDistrictResponse{
 		Entries: make([]*api.District, 0, len(districts)),
+		Count:   count,
 	}
 
 	for _, district := range districts {

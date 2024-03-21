@@ -39,29 +39,21 @@ func (c *ptRepository) FindById(id int64) (*entity.PropertyType, error) {
 	return &pt, nil
 }
 
-func (c *ptRepository) ListByName(name string, limit, offset int32) ([]*entity.PropertyType, error) {
-	var cc []*entity.PropertyType
+func (c *ptRepository) List(limit, offset int) ([]*entity.PropertyType, int64, error) {
+	var ptpt []*entity.PropertyType
 	if err := c.db.Select(
-		&cc,
-		fmt.Sprintf(`SELECT * FROM %s WHERE name ILIKE  $1  LIMIT $2 OFFSET $3`, pg.PropertyTypeTable),
-		"%"+name+"%", limit, offset,
-	); err != nil {
-		return nil, err
-	}
-	return cc, nil
-}
-
-func (c *ptRepository) List(limit, offset int) ([]*entity.PropertyType, error) {
-	var cities []*entity.PropertyType
-	if err := c.db.Select(
-		&cities,
+		&ptpt,
 		fmt.Sprintf("SELECT * FROM %s ORDER BY id LIMIT $1 OFFSET $2", pg.PropertyTypeTable),
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.PropertyTypeTable)); err != nil {
+		return nil, 0, err
+	}
+	return ptpt, count, nil
 }
 
 func (c *ptRepository) Update(pt *entity.PropertyType) error {

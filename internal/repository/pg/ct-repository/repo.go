@@ -51,17 +51,21 @@ func (c *ctRepository) ListByName(name string, limit, offset int32) ([]*entity.C
 	return cc, nil
 }
 
-func (c *ctRepository) List(limit, offset int) ([]*entity.ConfectionaryType, error) {
-	var cities []*entity.ConfectionaryType
+func (c *ctRepository) List(limit, offset int) ([]*entity.ConfectionaryType, int64, error) {
+	var ctct []*entity.ConfectionaryType
 	if err := c.db.Select(
-		&cities,
+		&ctct,
 		fmt.Sprintf("SELECT * FROM %s ORDER BY id LIMIT $1 OFFSET $2", pg.ConfectionaryTypeTable),
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.ConfectionaryTypeTable)); err != nil {
+		return nil, 0, err
+	}
+	return ctct, count, nil
 }
 
 func (c *ctRepository) Update(ct *entity.ConfectionaryType) error {

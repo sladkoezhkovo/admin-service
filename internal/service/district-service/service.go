@@ -13,8 +13,7 @@ type DistrictRepository interface {
 	Create(district *entity.District) error
 	FindById(id int64) (*entity.District, error)
 	ListByCityId(cityId int64) ([]*entity.District, error)
-	ListByName(name string, limit, offset int32) ([]*entity.District, error)
-	List(limit, offset int) ([]*entity.District, error)
+	List(limit, offset int) ([]*entity.District, int64, error)
 	Update(district *entity.District) error
 	Delete(id int64) error
 }
@@ -68,34 +67,22 @@ func (c *districtService) FindById(id int64) (*entity.District, error) {
 	return district, nil
 }
 
-func (c *districtService) ListByName(name string, limit, offset int32) ([]*entity.District, error) {
-	dd, err := c.repository.ListByName(name, limit, offset)
-	if err != nil {
-		var pgerr *pq.Error
-		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
-		}
-		return nil, err
-	}
-	return dd, nil
-}
-
-func (c *districtService) List(limit, offset int) ([]*entity.District, error) {
+func (c *districtService) List(limit, offset int) ([]*entity.District, int64, error) {
 	if !(limit > 0) {
-		return nil, service.ErrInvalidLimit
+		return nil, 0, service.ErrInvalidLimit
 	} else if offset < 0 {
-		return nil, service.ErrInvalidOffset
+		return nil, 0, service.ErrInvalidOffset
 	}
 
-	cities, err := c.repository.List(limit, offset)
+	dd, count, err := c.repository.List(limit, offset)
 	if err != nil {
 		var pgerr *pq.Error
 		if ok := errors.As(err, &pgerr); ok {
-			return nil, pgerr
+			return nil, 0, pgerr
 		}
-		return nil, err
+		return nil, 0, err
 	}
-	return cities, nil
+	return dd, count, nil
 }
 
 func (c *districtService) Update(district *entity.District) error {

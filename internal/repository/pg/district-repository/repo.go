@@ -61,25 +61,7 @@ func (c *districtRepository) ListByCityId(cityId int64) ([]*entity.District, err
 	return dd, nil
 }
 
-func (c *districtRepository) ListByName(name string, limit, offset int32) ([]*entity.District, error) {
-	var dd []*entity.District
-	if err := c.db.Select(
-		&dd,
-		fmt.Sprintf(
-			`SELECT 
-						d.id, d.name, c.name as "city.name" 
-					FROM %s d
-					INNER JOIN %s c ON d.city_id = c.id  	
-					WHERE d.name ILIKE  $1 
-					LIMIT $2 OFFSET $3`, pg.DistrictTable, pg.CityTable),
-		"%"+name+"%", limit, offset,
-	); err != nil {
-		return nil, err
-	}
-	return dd, nil
-}
-
-func (c *districtRepository) List(limit, offset int) ([]*entity.District, error) {
+func (c *districtRepository) List(limit, offset int) ([]*entity.District, int64, error) {
 	var dd []*entity.District
 	if err := c.db.Select(
 		&dd,
@@ -93,9 +75,13 @@ func (c *districtRepository) List(limit, offset int) ([]*entity.District, error)
 		limit,
 		offset,
 	); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return dd, nil
+	var count int64
+	if err := c.db.Get(&count, fmt.Sprintf("SELECT COUNT(id) FROM %s", pg.DistrictTable)); err != nil {
+		return nil, 0, err
+	}
+	return dd, count, nil
 }
 
 func (c *districtRepository) Update(district *entity.District) error {
